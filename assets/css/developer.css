@@ -1,0 +1,226 @@
+/*
+ * Probe Site Doctor — Developer and Page Speed screens.
+ * Loaded only on those two admin screens, on top of admin.css.
+ */
+
+.probesd-jump {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 1rem 0;
+}
+
+.probesd-jump a {
+	padding: 0.2rem 0.6rem;
+	border: 1px solid #c3c4c7;
+	border-radius: 2px;
+	background: #fff;
+	font-size: 12px;
+	text-decoration: none;
+}
+
+.probesd-info__fields {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+	gap: 0.35rem 1.5rem;
+	margin: 0.75rem 0 0;
+}
+
+.probesd-info__fields > div {
+	display: grid;
+	grid-template-columns: minmax(9rem, 14rem) 1fr;
+	gap: 0.75rem;
+	padding: 0.25rem 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.probesd-info__fields dt {
+	color: #50575e;
+	font-weight: 600;
+}
+
+.probesd-info__fields dd {
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+.probesd-export__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.probesd-export__preview textarea {
+	width: 100%;
+	margin-top: 0.5rem;
+	font-family: Consolas, Monaco, "Courier New", monospace;
+	font-size: 12px;
+}
+
+/* Page Speed ------------------------------------------------------------- */
+
+.probesd-analyzer__form {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.probesd-analyzer__quick {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	align-items: center;
+	margin: 0.5rem 0 0;
+}
+
+.probesd-analyzer__target code {
+	word-break: break-all;
+}
+
+.probesd-metrics {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+	gap: 0.5rem;
+	margin: 0.75rem 0;
+	padding: 0;
+	list-style: none;
+}
+
+.probesd-metrics li {
+	padding: 0.5rem 0.75rem;
+	border: 1px solid #dcdcde;
+	border-top: 3px solid #2271b1;
+	background: #fff;
+}
+
+.probesd-metrics__num {
+	display: block;
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.probesd-metrics__label {
+	display: block;
+	color: #50575e;
+	font-size: 11px;
+	text-transform: uppercase;
+}
+
+.probesd-causes {
+	margin: 0.75rem 0 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: probesd-cause;
+}
+
+.probesd-cause {
+	margin: 0 0 0.75rem;
+	padding: 0.75rem 1rem;
+	border: 1px solid #dcdcde;
+	border-left: 5px solid currentColor;
+	background: #fff;
+}
+
+.probesd-cause > p {
+	color: #1d2327;
+}
+
+.probesd-cause__head {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: baseline;
+}
+
+.probesd-cause__head h3 {
+	margin: 0;
+	font-size: 15px;
+}
+
+.probesd-affects {
+	color: #50575e;
+	font-size: 11px;
+	text-transform: uppercase;
+}
+
+.probesd-badge {
+	display: inline-block;
+	padding: 0.05em 0.5em;
+	border: 1px solid currentColor;
+	border-radius: 2px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.probesd-hosts {
+	margin: 0.5rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.probesd-hosts li {
+	display: flex;
+	gap: 0.5rem;
+	align-items: baseline;
+	padding: 0.15rem 0;
+}
+
+/* Field data ------------------------------------------------------------- */
+
+.probesd-vitals {
+	margin: 1rem 0;
+}
+
+.probesd-vitals caption {
+	padding: 0.35rem 0;
+	color: #50575e;
+	font-size: 12px;
+	font-weight: 600;
+	text-align: start;
+	text-transform: uppercase;
+}
+
+.probesd-vitals__note {
+	max-width: 34rem;
+	color: #50575e;
+	font-size: 12px;
+}
+
+.probesd-vitals__split {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+	gap: 0 1.5rem;
+}
+
+.probesd-vitals__settings {
+	margin-top: 1.5rem;
+	padding-top: 1rem;
+	border-top: 1px solid #dcdcde;
+}
+
+.probesd-rating {
+	display: inline-block;
+	padding: 0.05em 0.5em;
+	border: 1px solid currentColor;
+	border-radius: 2px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.probesd-rating--good {
+	color: #00804a;
+}
+
+.probesd-rating--needs-improvement {
+	color: #996800;
+}
+
+.probesd-rating--poor {
+	color: #b32d2e;
+}

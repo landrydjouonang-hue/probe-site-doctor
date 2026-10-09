@@ -1,0 +1,29 @@
+# Files that belong in the Git repository but not in the distributed plugin.
+# Used by `wp dist-archive` and by the release script in docs/RELEASING.md.
+
+.git
+.github
+.gitignore
+.distignore
+.wordpress-org
+docs
+tests
+node_modules
+vendor
+build
+dist
+composer.json
+composer.lock
+package.json
+package-lock.json
+phpcs.xml
+phpcs.xml.dist
+phpunit.xml
+phpunit.xml.dist
+CONTRIBUTING.md
+SECURITY.md
+README.md
+*.zip
+*.log
+.DS_Store
+Thumbs.db

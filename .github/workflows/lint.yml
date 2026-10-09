@@ -1,0 +1,80 @@
+name: Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  php-syntax:
+    name: PHP ${{ matrix.php }} syntax
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The plugin targets PHP 8.0 and must stay parseable on every
+        # supported version, including the ones after it.
+        php: [ '8.0', '8.1', '8.2', '8.3' ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Lint every PHP file
+        run: |
+          find . -name '*.php' -not -path './vendor/*' -print0 \
+            | xargs -0 -n1 -P4 php -l
+
+  standards:
+    name: WordPress coding standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          tools: cs2pr
+
+      - name: Install PHPCS and WPCS
+        run: |
+          composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer global require --no-interaction --no-progress \
+            squizlabs/php_codesniffer wp-coding-standards/wpcs
+          echo "$HOME/.composer/vendor/bin" >> "$GITHUB_PATH"
+
+      - name: Run PHPCS
+        run: phpcs -q --standard=WordPress --extensions=php --report=checkstyle . | cs2pr
+        continue-on-error: true
+
+  release-hygiene:
+    name: Version and packaging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Version matches everywhere
+        run: |
+          header=$(grep -m1 '^ \* Version:' probe-site-doctor.php | tr -dc '0-9.')
+          constant=$(grep -m1 "define( 'PROBESD_VERSION'" probe-site-doctor.php | cut -d"'" -f4)
+          stable=$(grep -m1 '^Stable tag:' readme.txt | tr -dc '0-9.')
+          uninstall=$(grep -m1 "define( 'PROBESD_VERSION'" uninstall.php | cut -d"'" -f4)
+          echo "header=$header constant=$constant stable=$stable uninstall=$uninstall"
+          test "$header" = "$constant" && test "$constant" = "$stable" && test "$stable" = "$uninstall"
+
+      - name: No byte order marks
+        run: |
+          if grep -rlIP '\xEF\xBB\xBF' --include='*.php' .; then
+            echo "A BOM sends output before headers. Remove it."
+            exit 1
+          fi
+
+      - name: Changelog mentions this version
+        run: |
+          version=$(grep -m1 '^Stable tag:' readme.txt | tr -dc '0-9.')
+          grep -q "= $version =" readme.txt
+          grep -q "\[$version\]" CHANGELOG.md

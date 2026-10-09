@@ -1,0 +1,651 @@
+/*
+ * Probe Site Doctor — Website Health Report.
+ *
+ * Used on the admin report screen, for printing (and printing to PDF), and
+ * inlined into the downloadable HTML file. It must therefore stand on its own:
+ * no icon fonts, no external resources, no admin styles assumed.
+ */
+
+.sdr {
+	--sdr-ink: #1d2327;
+	--sdr-muted: #50575e;
+	--sdr-line: #dcdcde;
+	--sdr-bg: #fff;
+	--sdr-soft: #f6f7f7;
+	--sdr-good: #00804a;
+	--sdr-info: #2271b1;
+	--sdr-warning: #996800;
+	--sdr-critical: #b32d2e;
+	--sdr-none: #646970;
+	box-sizing: border-box;
+	max-width: 62rem;
+	margin: 0 auto;
+	padding: 0 0 2rem;
+	background: var(--sdr-bg);
+	color: var(--sdr-ink);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.sdr *,
+.sdr *::before,
+.sdr *::after {
+	box-sizing: inherit;
+}
+
+.sdr p {
+	margin: 0 0 0.75em;
+}
+
+.sdr a {
+	color: var(--sdr-info);
+}
+
+.sdr-sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	border: 0;
+	white-space: nowrap;
+}
+
+/* Standalone file: give the page a frame the admin screen already provides. */
+body.probesd-report-file {
+	margin: 0;
+	padding: 2rem 1.25rem;
+	background: #f0f0f1;
+}
+
+body.probesd-report-file .sdr {
+	padding: 2rem 2.5rem;
+	border: 1px solid var(--sdr-line);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Header ------------------------------------------------------------------ */
+
+.sdr__header {
+	padding-bottom: 1rem;
+	border-bottom: 3px solid var(--sdr-ink);
+}
+
+.sdr__eyebrow {
+	margin: 0 0 0.25em;
+	color: var(--sdr-muted);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.sdr__site {
+	margin: 0;
+	font-size: 1.75rem;
+	line-height: 1.2;
+}
+
+.sdr__url {
+	margin: 0.25em 0 0;
+	color: var(--sdr-muted);
+	word-break: break-all;
+}
+
+.sdr__meta {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+	gap: 0.5rem 1.5rem;
+	margin: 1rem 0 0;
+}
+
+.sdr__meta dt {
+	color: var(--sdr-muted);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.sdr__meta dd {
+	margin: 0;
+}
+
+/* Notes ------------------------------------------------------------------- */
+
+.sdr__note {
+	margin: 1rem 0;
+	padding: 0.75rem 1rem;
+	border-left: 4px solid var(--sdr-info);
+	background: var(--sdr-soft);
+}
+
+.sdr__note--strong {
+	border-left-color: var(--sdr-warning);
+}
+
+.sdr__note--scope {
+	border-left-color: var(--sdr-none);
+	font-size: 0.875rem;
+}
+
+.sdr-fine {
+	color: var(--sdr-muted);
+	font-size: 0.875rem;
+}
+
+.sdr-empty {
+	color: var(--sdr-muted);
+	font-style: italic;
+}
+
+/* Blocks ------------------------------------------------------------------ */
+
+.sdr-block {
+	margin: 1.75rem 0 0;
+}
+
+.sdr-block > h2 {
+	margin: 0 0 0.5rem;
+	padding-bottom: 0.25rem;
+	border-bottom: 1px solid var(--sdr-line);
+	font-size: 1.25rem;
+}
+
+.sdr-subhead {
+	margin: 1.25rem 0 0.25rem;
+	font-size: 1rem;
+}
+
+/* Overall summary --------------------------------------------------------- */
+
+.sdr-overview {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	align-items: flex-start;
+	margin: 1rem 0;
+}
+
+.sdr-overview__score {
+	flex: 0 0 9rem;
+	margin: 0;
+	padding: 1rem;
+	border: 2px solid var(--sdr-none);
+	border-radius: 6px;
+	text-align: center;
+}
+
+.sdr-overview__number {
+	display: block;
+	font-size: 3rem;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.sdr-overview__out {
+	display: block;
+	color: var(--sdr-muted);
+	font-size: 0.75rem;
+	text-transform: uppercase;
+}
+
+.sdr-overview__band {
+	display: block;
+	margin-top: 0.5rem;
+	font-weight: 600;
+}
+
+.sdr-overview__text {
+	flex: 1 1 22rem;
+}
+
+.sdr-overview__headline {
+	font-size: 1.0625rem;
+	font-weight: 600;
+}
+
+.sdr-band--good {
+	border-color: var(--sdr-good);
+	color: var(--sdr-good);
+}
+
+.sdr-band--fair {
+	border-color: var(--sdr-warning);
+	color: var(--sdr-warning);
+}
+
+.sdr-band--poor {
+	border-color: var(--sdr-critical);
+	color: var(--sdr-critical);
+}
+
+.sdr-band--none {
+	border-color: var(--sdr-none);
+	color: var(--sdr-none);
+}
+
+.sdr-overview__score .sdr-overview__out {
+	color: inherit;
+	opacity: 0.8;
+}
+
+.sdr-counts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 0.75rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.sdr-counts li {
+	flex: 1 1 5.5rem;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--sdr-line);
+	border-top: 3px solid currentColor;
+	background: var(--sdr-bg);
+}
+
+.sdr-counts__num {
+	display: block;
+	color: var(--sdr-ink);
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.sdr-counts__label {
+	display: block;
+	font-size: 0.75rem;
+	text-transform: uppercase;
+}
+
+/* Severity and badges ----------------------------------------------------- */
+
+.sdr-sev--good {
+	color: var(--sdr-good);
+}
+
+.sdr-sev--info {
+	color: var(--sdr-info);
+}
+
+.sdr-sev--warning {
+	color: var(--sdr-warning);
+}
+
+.sdr-sev--critical {
+	color: var(--sdr-critical);
+}
+
+.sdr-sev--none,
+.sdr-sev--error,
+.sdr-sev--skipped {
+	color: var(--sdr-none);
+}
+
+.sdr-badge {
+	display: inline-block;
+	padding: 0.05em 0.5em;
+	border: 1px solid currentColor;
+	border-radius: 2px;
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.sdr-impact--high,
+.sdr-priority--high {
+	color: var(--sdr-critical);
+}
+
+.sdr-impact--medium,
+.sdr-priority--medium {
+	color: var(--sdr-warning);
+}
+
+.sdr-impact--low,
+.sdr-priority--low {
+	color: var(--sdr-none);
+}
+
+.sdr-priority--blocked {
+	color: var(--sdr-info);
+}
+
+/* Tables ------------------------------------------------------------------ */
+
+.sdr-table {
+	width: 100%;
+	margin: 0.75rem 0;
+	border: 1px solid var(--sdr-line);
+	border-collapse: collapse;
+	font-size: 0.875rem;
+}
+
+.sdr-table th,
+.sdr-table td {
+	padding: 0.4rem 0.6rem;
+	border-bottom: 1px solid var(--sdr-line);
+	text-align: start;
+	vertical-align: top;
+}
+
+.sdr-table thead th {
+	background: var(--sdr-soft);
+	font-size: 0.75rem;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+}
+
+.sdr-table tbody tr:nth-child(even) {
+	background: #fafafa;
+}
+
+.sdr-table--compact td,
+.sdr-table--compact th {
+	padding: 0.3rem 0.6rem;
+}
+
+/* Sections and findings --------------------------------------------------- */
+
+.sdr-section {
+	margin-top: 2.25rem;
+	padding-top: 0.5rem;
+}
+
+.sdr-section__head {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+	align-items: baseline;
+	justify-content: space-between;
+	padding-bottom: 0.25rem;
+	border-bottom: 2px solid var(--sdr-ink);
+}
+
+.sdr-section__head h2 {
+	margin: 0;
+	border: 0;
+	font-size: 1.375rem;
+}
+
+.sdr-section__score {
+	margin: 0;
+	padding: 0.1rem 0.6rem;
+	border: 1px solid currentColor;
+	border-radius: 2px;
+	font-weight: 700;
+}
+
+.sdr-section__intro {
+	margin-top: 0.75rem;
+	color: var(--sdr-muted);
+}
+
+.sdr-section__assessment {
+	font-weight: 600;
+}
+
+.sdr-finding {
+	margin: 1rem 0;
+	padding: 0.85rem 1rem;
+	border: 1px solid var(--sdr-line);
+	border-left: 5px solid currentColor;
+	background: var(--sdr-bg);
+}
+
+.sdr-finding > p,
+.sdr-finding > div {
+	color: var(--sdr-ink);
+}
+
+.sdr-finding__head {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: baseline;
+}
+
+.sdr-finding__title {
+	margin: 0;
+	font-size: 1.0625rem;
+}
+
+.sdr-finding__check {
+	margin: 0.15rem 0 0.6rem;
+	color: var(--sdr-muted);
+	font-size: 0.8125rem;
+}
+
+.sdr-method {
+	display: inline-block;
+	margin-inline-start: 0.5rem;
+	padding: 0 0.4em;
+	border: 1px solid var(--sdr-line);
+	border-radius: 2px;
+	color: var(--sdr-muted);
+	font-size: 0.6875rem;
+	text-transform: uppercase;
+}
+
+.sdr-manual,
+.sdr-details {
+	margin: 0.75rem 0 0;
+	padding: 0.6rem 0.85rem;
+	border: 1px dashed var(--sdr-line);
+	background: var(--sdr-soft);
+}
+
+.sdr-manual h4,
+.sdr-details h4 {
+	margin: 0 0 0.4rem;
+	font-size: 0.9375rem;
+}
+
+.sdr-manual.is-destructive {
+	border-color: var(--sdr-critical);
+}
+
+.sdr-manual__notice {
+	font-size: 0.8125rem;
+}
+
+.sdr-manual ol {
+	margin: 0 0 0.5rem;
+	padding-inline-start: 1.25rem;
+}
+
+.sdr-command__label {
+	margin: 0.5rem 0 0.2rem;
+	color: var(--sdr-muted);
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.sdr-command {
+	margin: 0;
+	padding: 0.5rem 0.6rem;
+	overflow-x: auto;
+	border: 1px solid var(--sdr-line);
+	background: #fff;
+	font-family: Consolas, Monaco, "Courier New", monospace;
+	font-size: 0.8125rem;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+/* Result data (rendered by View::data) ----------------------------------- */
+
+.sdr .probesd-data {
+	display: grid;
+	grid-template-columns: minmax(8rem, 14rem) 1fr;
+	gap: 0.15rem 1rem;
+	margin: 0;
+	font-size: 0.8125rem;
+}
+
+.sdr .probesd-data dt {
+	color: var(--sdr-muted);
+	font-weight: 600;
+}
+
+.sdr .probesd-data dd {
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+.sdr .probesd-data-table {
+	width: 100%;
+	margin: 0.4rem 0;
+	border: 1px solid var(--sdr-line);
+	border-collapse: collapse;
+	font-size: 0.8125rem;
+}
+
+.sdr .probesd-data-table th,
+.sdr .probesd-data-table td {
+	padding: 0.25rem 0.5rem;
+	border-bottom: 1px solid var(--sdr-line);
+	text-align: start;
+	vertical-align: top;
+	overflow-wrap: anywhere;
+}
+
+/* Footer ------------------------------------------------------------------ */
+
+.sdr__footer {
+	margin-top: 2rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid var(--sdr-line);
+	color: var(--sdr-muted);
+	font-size: 0.8125rem;
+}
+
+/* Admin toolbar (screen only; never part of the exported file) ------------- */
+
+.probesd-report__toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem 1.5rem;
+	align-items: center;
+	margin: 1rem 0;
+	padding: 0.85rem 1rem;
+	border: 1px solid #c3c4c7;
+	background: #fff;
+}
+
+.probesd-report__picker,
+.probesd-report__tools,
+.probesd-report__run {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: center;
+	margin: 0;
+}
+
+.probesd-report__tools {
+	margin-inline-start: auto;
+}
+
+.probesd-report__hint {
+	flex: 1 0 100%;
+	margin: 0;
+	color: #50575e;
+	font-size: 0.8125rem;
+}
+
+.probesd-report .sdr {
+	margin: 1rem 0 0;
+	padding: 1.5rem 1.75rem;
+	border: 1px solid #c3c4c7;
+}
+
+/* Print ------------------------------------------------------------------- */
+
+@page {
+	margin: 14mm 12mm;
+}
+
+@media print {
+	body.probesd-report-file {
+		padding: 0;
+		background: #fff;
+	}
+
+	body.probesd-report-file .sdr {
+		padding: 0;
+		border: 0;
+		box-shadow: none;
+	}
+
+	.sdr {
+		max-width: none;
+		font-size: 10.5pt;
+	}
+
+	.sdr,
+	.sdr * {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+	}
+
+	/* Admin chrome must not end up in the printout. */
+	#adminmenumain,
+	#wpadminbar,
+	#wpfooter,
+	#screen-meta,
+	#screen-meta-links,
+	.probesd-report__toolbar,
+	.notice,
+	.update-nag,
+	.wp-header-end {
+		display: none !important;
+	}
+
+	#wpcontent,
+	#wpbody-content,
+	.wrap {
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+
+	/* Each report section starts on a fresh page. */
+	.sdr-section {
+		break-before: page;
+	}
+
+	.sdr-finding,
+	.sdr-manual,
+	.sdr-details,
+	.sdr-table tr {
+		break-inside: avoid;
+	}
+
+	.sdr-table thead {
+		display: table-header-group;
+	}
+
+	.sdr__header {
+		break-after: avoid;
+	}
+
+	.sdr-block > h2,
+	.sdr-subhead,
+	.sdr-section__head {
+		break-after: avoid;
+	}
+
+	.sdr a {
+		color: inherit;
+		text-decoration: none;
+	}
+}

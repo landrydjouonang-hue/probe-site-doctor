@@ -1,0 +1,26 @@
+# Build output
+/build/
+/dist/
+*.zip
+
+# Dependencies (the plugin ships none; these are for tooling only)
+/vendor/
+/node_modules/
+composer.lock
+package-lock.json
+
+# Local and editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.sublime-*
+*.log
+*.bak
+*.orig
+*~
+
+# Local environment
+.env
+.env.*
+/wp-cli.local.yml

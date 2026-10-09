@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probe Site Doctor — walkthrough</title>
+<meta name="description" content="An auto-playing walkthrough of Probe Site Doctor: health scan, report, page speed, Core Web Vitals and developer diagnostics.">
+<style>
+	:root {
+		--ink: #0b1a2b;
+		--panel: #0f2338;
+		--edge: rgba(255, 255, 255, 0.12);
+		--text: #e9f1f8;
+		--muted: #9db4c9;
+		--accent: #3fcf8e;
+		--blue: #6fb6ff;
+		--stage: 1280px;
+	}
+
+	* { box-sizing: border-box; }
+
+	body {
+		margin: 0;
+		padding: 24px 16px 40px;
+		background: radial-gradient(120% 120% at 50% 0%, #16304b 0%, var(--ink) 60%, #060f1a 100%);
+		color: var(--text);
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+		line-height: 1.5;
+	}
+
+	.wrap { max-width: var(--stage); margin: 0 auto; }
+
+	.masthead {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px 20px;
+		align-items: baseline;
+		margin-bottom: 16px;
+	}
+
+	.masthead h1 { margin: 0; font-size: clamp(20px, 2.4vw, 28px); letter-spacing: -0.02em; }
+	.masthead p { margin: 0; color: var(--muted); font-size: 14px; }
+
+	/* 16:9 stage, so a screen recording of this page is already the right shape. */
+	.stage {
+		position: relative;
+		aspect-ratio: 16 / 9;
+		border: 1px solid var(--edge);
+		border-radius: 14px;
+		background: #081525;
+		overflow: hidden;
+		box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+	}
+
+	.slide {
+		position: absolute;
+		inset: 0;
+		opacity: 0;
+		transition: opacity 600ms ease;
+		display: grid;
+		place-items: center;
+	}
+
+	.slide.is-active { opacity: 1; }
+
+	.slide img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top center;
+		transform: scale(1.02);
+		transition: transform 5.2s linear;
+	}
+
+	.slide.is-active img { transform: scale(1.07); }
+
+	.caption {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		padding: 64px 32px 26px;
+		background: linear-gradient(transparent, rgba(6, 15, 26, 0.86) 45%, rgba(6, 15, 26, 0.96));
+	}
+
+	.caption h2 {
+		margin: 0 0 4px;
+		font-size: clamp(18px, 2.1vw, 26px);
+		letter-spacing: -0.01em;
+	}
+
+	.caption p { margin: 0; max-width: 72ch; color: var(--muted); font-size: clamp(13px, 1.2vw, 16px); }
+
+	.badge {
+		display: inline-block;
+		margin-bottom: 10px;
+		padding: 2px 10px;
+		border: 1px solid var(--edge);
+		border-radius: 999px;
+		color: var(--accent);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	/* Title and end cards */
+	.card {
+		display: grid;
+		place-items: center;
+		text-align: center;
+		padding: 5%;
+		background: radial-gradient(120% 140% at 30% 20%, #1b3a5c 0%, #0f2338 60%, #0a1826 100%);
+	}
+
+	.card h2 { margin: 0 0 10px; font-size: clamp(26px, 4.4vw, 54px); letter-spacing: -0.03em; }
+	.card p { margin: 0 auto; max-width: 62ch; color: var(--muted); font-size: clamp(14px, 1.5vw, 19px); }
+
+	.card ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 10px;
+		justify-content: center;
+		margin: 22px 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.card li {
+		padding: 5px 13px;
+		border: 1px solid var(--edge);
+		border-radius: 999px;
+		color: #d5e4f2;
+		font-size: clamp(11px, 1.15vw, 14px);
+	}
+
+	.progress {
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 3px;
+		width: 100%;
+		background: rgba(255, 255, 255, 0.12);
+	}
+
+	.progress span {
+		display: block;
+		height: 100%;
+		width: 0;
+		background: var(--accent);
+	}
+
+	.controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		align-items: center;
+		margin-top: 14px;
+	}
+
+	button {
+		padding: 7px 14px;
+		border: 1px solid var(--edge);
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.05);
+		color: var(--text);
+		font: inherit;
+		font-size: 14px;
+		cursor: pointer;
+	}
+
+	button:hover { background: rgba(255, 255, 255, 0.1); }
+	button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+	.dots { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+
+	.dot {
+		width: 10px;
+		height: 10px;
+		padding: 0;
+		border-radius: 50%;
+		border: 1px solid var(--edge);
+		background: rgba(255, 255, 255, 0.14);
+	}
+
+	.dot.is-active { background: var(--accent); border-color: var(--accent); }
+
+	.counter { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+	.note { margin-top: 18px; color: var(--muted); font-size: 13px; }
+	.note a { color: var(--blue); }
+
+	@media (prefers-reduced-motion: reduce) {
+		.slide, .slide img, .slide.is-active img { transition: none; transform: none; }
+	}
+</style>
+</head>
+<body>
+<div class="wrap">
+	<header class="masthead">
+		<h1>Probe Site Doctor</h1>
+		<p>A walkthrough of every screen — real screenshots, nothing staged.</p>
+	</header>
+
+	<div class="stage" id="stage" role="region" aria-label="Probe Site Doctor walkthrough" aria-roledescription="carousel">
+		<div class="progress"><span id="bar"></span></div>
+
+		<section class="slide card is-active" data-duration="4200">
+			<div>
+				<h2>Probe Site Doctor</h2>
+				<p>WordPress health, performance and developer diagnostics. One read-only scan, then a report you can act on.</p>
+				<ul>
+					<li>49 read-only checks</li>
+					<li>Printable health report</li>
+					<li>Page speed causes</li>
+					<li>Core Web Vitals</li>
+					<li>Developer diagnostics</li>
+				</ul>
+			</div>
+		</section>
+
+		<section class="slide" data-duration="5200">
+			<img src="../screenshots/dashboard.png" alt="The Site Doctor dashboard showing a health score of 83, severity counts and a score for each area.">
+			<div class="caption">
+				<span class="badge">Dashboard</span>
+				<h2>One scan, a score, and where to look first</h2>
+				<p>49 checks across performance, database, configuration, plugins &amp; themes, technical SEO and developer diagnostics — with the honest note that the score is not a security guarantee.</p>
+			</div>
+		</section>
+
+		<section class="slide" data-duration="5600">
+			<img src="../screenshots/findings.png" alt="Findings list showing severity, explanation, estimated impact, recommended action and collapsible manual steps.">
+			<div class="caption">
+				<span class="badge">Findings</span>
+				<h2>Every finding says what it measured — and what to do</h2>
+				<p>Severity, explanation, estimated impact, recommended action, and manual steps with copyable commands. Site Doctor never runs them for you.</p>
+			</div>
+		</section>
+
+		<section class="slide" data-duration="4800">
+			<img src="../screenshots/updates.png" alt="Update recommendations table listing priority, component, installed and recommended versions.">
+			<div class="caption">
+				<span class="badge">Updates</span>
+				<h2>Update recommendations, never installed</h2>
+				<p>Prioritised from the update data WordPress already has. No request to WordPress.org, no automatic installs.</p>
+			</div>
+		</section>
+
+		<section class="slide" data-duration="5200">
+			<img src="../screenshots/report.png" alt="The Website Health Report with an overall diagnostic summary and priority recommendations.">
+			<div class="caption">
+				<span class="badge">Health report</span>
+				<h2>A report you can print or hand to a client</h2>
+				<p>Overall summary, priority recommendations, per-section assessments. Print to PDF, or download one self-contained HTML file.</p>
+			</div>
+		</section>
+
+		<section class="slide" data-duration="5200">
+			<img src="../screenshots/report-findings.png" alt="The Security Indicators section of the report, repeating its scope above the findings.">
+			<div class="caption">
+				<span class="badge">Scope</span>
+				<h2>Seven sections, each stating its own limits</h2>
+				<p>Security Indicators says it is not a security audit. SEO says it does not replace an SEO platform. Performance says it is not a browser measurement.</p>
+			</div>
+		</section>
+
+		<section class="slide" data-duration="5200">
+			<img src="../screenshots/pagespeed.png" alt="Page Speed screen showing server response times, asset weight and referenced file counts for one page.">
+			<div class="caption">
+				<span class="badge">Page speed</span>
+				<h2>What the server sends, for any page</h2>
+				<p>Fetched twice as an anonymous visitor to see whether a cache answers, with asset weight, render-blocking files and caching headers.</p>
+			</div>
+		</section>
+
+		<section class="slide" data-duration="6000">
+			<img src="../screenshots/causes.png" alt="A prioritised list of causes, each with what was measured, the Core Web Vital affected and how to improve it.">
+			<div class="caption">
+				<span class="badge">Causes</span>
+				<h2>What is making this page slow — and the fix</h2>
+				<p>Each cause names what was measured, the Core Web Vital it usually affects, and the concrete change that improves it.</p>
+			</div>
+		</section>
+
+		<section class="slide" data-duration="6000">
+			<img src="../screenshots/vitals.png" alt="Core Web Vitals table with 75th percentile LCP, INP, CLS, FCP and TTFB, split by mobile and desktop.">
+			<div class="caption">
+				<span class="badge">Field data</span>
+				<h2>Core Web Vitals from real visitors</h2>
+				<p>Optional, off by default, first-party only. LCP, INP and CLS as 75th percentiles per page and device — no IP address, no user agent, no cookie.</p>
+			</div>
+		</section>
+
+		<section class="slide" data-duration="5600">
+			<img src="../screenshots/developer.png" alt="Developer screen listing environment, active theme, plugins, extensions, cron, REST, debug and database details.">
+			<div class="caption">
+				<span class="badge">Developer</span>
+				<h2>Everything you need when you inherit a site</h2>
+				<p>Environment, theme, active plugins, must-use plugins and drop-ins, PHP extensions and limits, cron, REST, debug log, database configuration.</p>
+			</div>
+		</section>
+
+		<section class="slide" data-duration="5200">
+			<img src="../screenshots/export.png" alt="Exportable diagnostic report with copy to clipboard and Markdown or JSON download buttons.">
+			<div class="caption">
+				<span class="badge">Export</span>
+				<h2>A diagnostic report for the support ticket</h2>
+				<p>Copy to clipboard, or download Markdown or JSON. Keys, salts, the database password and log contents are never included.</p>
+			</div>
+		</section>
+
+		<section class="slide" data-duration="4800">
+			<img src="../screenshots/history.png" alt="Scan history table with score, counts, source and duration for each stored scan.">
+			<div class="caption">
+				<span class="badge">History</span>
+				<h2>Every scan kept, every trend visible</h2>
+				<p>Open, print, download or delete any stored scan. The newest 20 are kept by default.</p>
+			</div>
+		</section>
+
+		<section class="slide card" data-duration="5200">
+			<div>
+				<h2>Read-only. First-party. Honest.</h2>
+				<p>A scan never changes your site. Nothing is sent to a third party. Where Site Doctor cannot know something, it says so instead of guessing.</p>
+				<ul>
+					<li>No automatic cleanup</li>
+					<li>No automatic updates</li>
+					<li>No setting changes</li>
+					<li>No malware scanning claims</li>
+					<li>GPL-2.0-or-later</li>
+				</ul>
+			</div>
+		</section>
+	</div>
+
+	<div class="controls">
+		<button type="button" id="toggle" aria-label="Pause the walkthrough">Pause</button>
+		<button type="button" id="prev" aria-label="Previous slide">Previous</button>
+		<button type="button" id="next" aria-label="Next slide">Next</button>
+		<span class="counter" id="counter">1 / 13</span>
+		<div class="dots" id="dots" role="tablist" aria-label="Choose a slide"></div>
+	</div>
+
+	<p class="note">
+		Keyboard: <strong>space</strong> play/pause, <strong>←</strong> / <strong>→</strong> to move.
+		Screenshots are from a real install; the Core Web Vitals figures are demonstration data.
+		<a href="../../README.md">Back to the README</a>
+	</p>
+</div>
+
+<script>
+( function () {
+	'use strict';
+
+	var stage   = document.getElementById( 'stage' );
+	var slides  = Array.prototype.slice.call( stage.querySelectorAll( '.slide' ) );
+	var bar     = document.getElementById( 'bar' );
+	var dots    = document.getElementById( 'dots' );
+	var counter = document.getElementById( 'counter' );
+	var toggle  = document.getElementById( 'toggle' );
+
+	var index   = 0;
+	var playing = true;
+	var started = 0;
+	var frame   = null;
+
+	slides.forEach( function ( slide, i ) {
+		var dot = document.createElement( 'button' );
+		dot.type = 'button';
+		dot.className = 'dot' + ( 0 === i ? ' is-active' : '' );
+		dot.setAttribute( 'role', 'tab' );
+		dot.setAttribute( 'aria-label', 'Slide ' + ( i + 1 ) );
+		dot.addEventListener( 'click', function () { show( i ); } );
+		dots.appendChild( dot );
+	} );
+
+	function duration( i ) {
+		return parseInt( slides[ i ].dataset.duration, 10 ) || 5000;
+	}
+
+	function show( i ) {
+		index = ( i + slides.length ) % slides.length;
+		slides.forEach( function ( slide, n ) {
+			slide.classList.toggle( 'is-active', n === index );
+		} );
+		Array.prototype.forEach.call( dots.children, function ( dot, n ) {
+			dot.classList.toggle( 'is-active', n === index );
+		} );
+		counter.textContent = ( index + 1 ) + ' / ' + slides.length;
+		started = performance.now();
+		bar.style.width = '0%';
+	}
+
+	function tick( now ) {
+		if ( playing ) {
+			var elapsed = now - started;
+			var total   = duration( index );
+			bar.style.width = Math.min( 100, ( elapsed / total ) * 100 ) + '%';
+			if ( elapsed >= total ) {
+				show( index + 1 );
+			}
+		}
+		frame = window.requestAnimationFrame( tick );
+	}
+
+	function setPlaying( value ) {
+		playing = value;
+		started = performance.now();
+		toggle.textContent = value ? 'Pause' : 'Play';
+		toggle.setAttribute( 'aria-label', value ? 'Pause the walkthrough' : 'Play the walkthrough' );
+	}
+
+	toggle.addEventListener( 'click', function () { setPlaying( ! playing ); } );
+	document.getElementById( 'next' ).addEventListener( 'click', function () { show( index + 1 ); } );
+	document.getElementById( 'prev' ).addEventListener( 'click', function () { show( index - 1 ); } );
+
+	document.addEventListener( 'keydown', function ( event ) {
+		if ( 'ArrowRight' === event.key ) { show( index + 1 ); }
+		if ( 'ArrowLeft' === event.key ) { show( index - 1 ); }
+		if ( ' ' === event.key || 'Spacebar' === event.key ) {
+			event.preventDefault();
+			setPlaying( ! playing );
+		}
+	} );
+
+	// Pause while the tab is hidden, so the walkthrough is where you left it.
+	document.addEventListener( 'visibilitychange', function () {
+		if ( document.hidden ) { setPlaying( false ); }
+	} );
+
+	show( 0 );
+	frame = window.requestAnimationFrame( tick );
+}() );
+</script>
+</body>
+</html>
